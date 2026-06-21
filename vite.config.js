@@ -7,12 +7,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: '0.0.0.0',
-    allowedHosts: ['sesc-it-team.ru', 'auth.sesc-it-team.ru'],
+    allowedHosts: ['${DOMAIN}', '${AUTH-DOMAIN}'],
   },
   preview: {
     host: '0.0.0.0',
     port: 4173,
     strictPort: true,
-    allowedHosts: ['sesc-it-team.ru', 'auth.sesc-it-team.ru'],
+    allowedHosts: ['${DOMAIN}', '${AUTH-DOMAIN}'],
   },
 })
