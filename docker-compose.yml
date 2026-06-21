@@ -20,14 +20,11 @@ services:
 
       - "traefik.http.services.auth-admin.loadbalancer.server.port=4173"
 
-      - "traefik.http.middlewares.auth-admin-strip.stripprefix.prefixes=/auth-admin"
-
       - "traefik.http.routers.auth-admin.rule=Host(`${DOMAIN}`) && PathPrefix(`/auth-admin`)"
       - "traefik.http.routers.auth-admin.entrypoints=websecure"
       - "traefik.http.routers.auth-admin.tls=true"
       - "traefik.http.routers.auth-admin.tls.certresolver=letsencrypt"
       - "traefik.http.routers.auth-admin.priority=200"
-      - "traefik.http.routers.auth-admin.middlewares=auth-admin-strip"
       - "traefik.http.routers.auth-admin.service=auth-admin"
 
 networks:
