@@ -7,6 +7,9 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+      AUTH_DOMAIN: ${AUTH_DOMAIN}
 
     networks:
       - traefik-public
