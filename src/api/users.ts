@@ -6,7 +6,7 @@ import type {
   UsersListQuery,
 } from "./types";
 
-const API_BASE = import.meta.env.BASE_URL;
+const API_BASE = `http://${import.meta.env.VITE_DOMAIN}`;
 
 async function request<T>(
   url: string,

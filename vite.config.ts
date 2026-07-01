@@ -6,8 +6,8 @@ import tailwindcss from "@tailwindcss/vite"
 
 
 const allowedHosts = [
-  process.env.DOMAIN,
-  process.env.AUTH_DOMAIN,
+  process.env.VITE_DOMAIN,
+  process.env.VITE_AUTH_DOMAIN,
 ].filter((host): host is string => Boolean(host))
 
 export default defineConfig({
