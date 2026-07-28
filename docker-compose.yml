@@ -13,6 +13,7 @@ services:
 
     networks:
       - traefik-public
+      - logging
 
     labels:
       traefik.enable: "true"
@@ -35,3 +36,6 @@ networks:
   traefik-public:
     external: true
     name: traefik-public
+  logging:
+    external: true
+    name: logging
