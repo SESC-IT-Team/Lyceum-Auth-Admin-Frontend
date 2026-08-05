@@ -6,7 +6,7 @@ import type {
   UsersListQuery,
 } from "./types";
 
-const API_BASE = `http://${import.meta.env.VITE_DOMAIN}`;
+const API_BASE = `${import.meta.env.VITE_DOMAIN}`;
 
 async function request<T>(
   url: string,
@@ -32,15 +32,6 @@ async function request<T>(
 
   return response.json() as Promise<T>;
 }
-
-/*
-
-headers: {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-}
-
-*/
 
 export async function getUsers(
   params: UsersListQuery,

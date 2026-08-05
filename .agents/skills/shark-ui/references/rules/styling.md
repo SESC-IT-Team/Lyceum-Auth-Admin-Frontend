@@ -53,7 +53,7 @@ import { cn } from "@/lib/utils"
 <Card className="bg-blue-100 text-blue-900 font-bold">…</Card>
 <Icon size={16} />  {/* prefer className size-* on SVG */}
 <span className="text-emerald-600">+20.1%</span>
-<DialogContent className="z-999">…</DialogContent>
+<DialogContent className="z-[999]">…</DialogContent>
 ```
 
 ## Check before finalizing
