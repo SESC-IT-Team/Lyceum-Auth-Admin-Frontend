@@ -1,5 +1,5 @@
 import type { ChangeEvent } from "react";
-import { ArrowUpAZ, SearchIcon, XIcon } from "lucide-react";
+import { ArrowUpAZ, Columns3Icon, PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import type { SortingOrder, UserSortableField } from "@/api/literals";
 import {
   InputGroup,
@@ -25,6 +25,14 @@ import {
   type SearchableField,
 } from "@/lib/users-meta";
 import{ type FiltersState, UsersFiltersPopover } from "@/components/auth-admin/UsersFiltersPopover";
+import {
+  Menu,
+  MenuCheckboxItem,
+  MenuContent,
+  MenuGroup,
+  MenuTrigger,
+} from "@/components/ui/menu";
+import { USER_COLUMNS, type UserColumnKey } from "@/components/auth-admin/UsersTable";
 
 const searchFieldCollection = createListCollection({
   items: SEARCH_FIELD_ORDER.map((value) => ({
@@ -52,6 +60,9 @@ interface UsersToolbarProps {
   filters: FiltersState;
   onFiltersChange: (next: FiltersState) => void;
   isFetching: boolean;
+  visibleColumns: UserColumnKey[];
+  onVisibleColumnsChange: (columns: UserColumnKey[]) => void;
+  onCreateUser: () => void;
 }
 
 export function UsersToolbar({
@@ -66,6 +77,9 @@ export function UsersToolbar({
   filters,
   onFiltersChange,
   isFetching,
+  visibleColumns,
+  onVisibleColumnsChange,
+  onCreateUser,
 }: UsersToolbarProps) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -99,6 +113,7 @@ export function UsersToolbar({
             onValueChange={(details) =>
               onSearchFieldChange(details.value[0] as SearchableField)
             }
+            
           >
             <SelectTrigger
               aria-label="Поле поиска"
@@ -119,6 +134,10 @@ export function UsersToolbar({
       </InputGroup>
 
       <div className="flex items-center gap-2">
+        <Button onClick={onCreateUser}>
+          <PlusIcon aria-hidden="true" />
+          Добавить пользователя
+        </Button>
         <Select
           collection={sortFieldCollection}
           value={[sortBy]}
@@ -156,6 +175,34 @@ export function UsersToolbar({
         </Button>
 
         <UsersFiltersPopover value={filters} onChange={onFiltersChange} />
+        <Menu>
+          <MenuTrigger asChild>
+            <Button aria-label="Настроить колонки" variant="outline" size="icon-md">
+              <Columns3Icon aria-hidden="true" />
+            </Button>
+          </MenuTrigger>
+          <MenuContent>
+            <MenuGroup heading="Колонки таблицы">
+              {USER_COLUMNS.map(({ key, label }) => (
+                <MenuCheckboxItem
+                  key={key}
+                  checked={visibleColumns.includes(key)}
+                  value={key}
+                  closeOnSelect={false}
+                  onCheckedChange={(checked) => {
+                    onVisibleColumnsChange(
+                      checked
+                        ? [...visibleColumns, key]
+                        : visibleColumns.filter((column) => column !== key),
+                    );
+                  }}
+                >
+                  {label}
+                </MenuCheckboxItem>
+              ))}
+            </MenuGroup>
+          </MenuContent>
+        </Menu>
       </div>
     </div>
   );

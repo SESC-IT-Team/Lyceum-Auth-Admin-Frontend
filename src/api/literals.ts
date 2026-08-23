@@ -61,5 +61,18 @@ export type UserSortableField =
   | "graduation_year"
   | "login"
   | "gender"
+  | "lives_in_dormitory"
+  | "created_at"
+  | "updated_at";
+
+export type DepartmentMemberPosition = "admin" | "worker";
+export type DepartmentMemberSortableField =
+  | "user.full_name"
+  | "user.grade"
+  | "user.class_name"
+  | "user.login"
+  | "user.gender"
+  | "user.created_at"
+  | "position"
   | "created_at"
   | "updated_at";

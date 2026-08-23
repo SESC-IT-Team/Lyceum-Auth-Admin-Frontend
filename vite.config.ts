@@ -11,14 +11,20 @@ const allowedHosts = [
 ].filter((host): host is string => Boolean(host))
 
 export default defineConfig({
-  base: '/auth-admin/',
+  //base: '/auth-admin/',
   server: {
     host: '0.0.0.0',
     allowedHosts,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000",
+        changeOrigin: true
+      }
+    }
   },
   preview: {
     host: '0.0.0.0',
-    port: 4173,
+    port: 4000,
     strictPort: true,
     allowedHosts,
   },

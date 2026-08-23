@@ -8,20 +8,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RoleBadge } from "@/components/auth-admin/RoleBadge";
-import { GENDER_LABELS, formatDate, getInitials } from "@/lib/users-meta";
+import { GENDER_LABELS, formatDate } from "@/lib/users-meta";
 
-const COLUMN_COUNT = 8;
 const SKELETON_ROWS = 8;
+
+export type UserColumnKey =
+  | "full_name"
+  | "login"
+  | "roles"
+  | "gender"
+  | "class_name"
+  | "graduation_year"
+  | "birthday"
+  | "created_at"
+  | "updated_at"
+  | "lives_in_dormitory";
+
+export const USER_COLUMNS: Array<{ key: UserColumnKey; label: string }> = [
+  { key: "full_name", label: "ФИО" },
+  { key: "login", label: "Логин" },
+  { key: "roles", label: "Роли" },
+  { key: "gender", label: "Пол" },
+  { key: "class_name", label: "Класс" },
+  { key: "graduation_year", label: "Год выпуска" },
+  { key: "birthday", label: "Дата рождения" },
+  { key: "created_at", label: "Дата создания" },
+  { key: "updated_at", label: "Дата обновления" },
+  { key: "lives_in_dormitory", label: "Общежитие" },
+];
 
 interface UsersTableProps {
   users: UserGetResponse[];
   isLoading: boolean;
   isFetching: boolean;
   error: string | null;
+  onUserClick: (user: UserGetResponse) => void;
+  visibleColumns: UserColumnKey[];
 }
 
 export function UsersTable({
@@ -29,57 +53,34 @@ export function UsersTable({
   isLoading,
   isFetching,
   error,
+  onUserClick,
+  visibleColumns,
 }: UsersTableProps) {
+  const hasColumn = (column: UserColumnKey) => visibleColumns.includes(column);
+
   return (
     <Table className="users-admin-fade-in">
       <TableHeader>
         <TableRow>
-          <TableHead>ФИО</TableHead>
-          <TableHead>Логин</TableHead>
-          <TableHead>Роли</TableHead>
-          <TableHead>Пол</TableHead>
-          <TableHead>Класс</TableHead>
-          <TableHead>Год выпуска</TableHead>
-          <TableHead>Создан</TableHead>
-          <TableHead className="text-right">Кол-во разрешений</TableHead>
+          {USER_COLUMNS.filter(({ key }) => hasColumn(key)).map(({ key, label }) => (
+            <TableHead key={key}>{label}</TableHead>
+          ))}
         </TableRow>
       </TableHeader>
       <TableBody>
         {isLoading ? (
           Array.from({ length: SKELETON_ROWS }).map((_, i) => (
             <TableRow key={i}>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Skeleton className="size-8 rounded-full" />
-                  <Skeleton className="h-4 w-36" />
-                </div>
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-24" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5 w-28 rounded-full" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-16" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-10" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-12" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-20" />
-              </TableCell>
-              <TableCell className="text-right">
-                <Skeleton className="ms-auto h-4 w-8" />
-              </TableCell>
+              {visibleColumns.map((column) => (
+                <TableCell key={column}>
+                  <Skeleton className={column === "full_name" ? "h-4 w-36" : "h-4 w-20"} />
+                </TableCell>
+              ))}
             </TableRow>
           ))
         ) : error ? (
           <TableRow>
-            <TableCell colSpan={COLUMN_COUNT} className="h-40 text-center">
+            <TableCell colSpan={visibleColumns.length} className="h-40 text-center">
               <div className="flex flex-col items-center gap-2">
                 <AlertTriangleIcon
                   aria-hidden="true"
@@ -96,7 +97,7 @@ export function UsersTable({
           </TableRow>
         ) : users.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={COLUMN_COUNT} className="h-40 text-center">
+            <TableCell colSpan={visibleColumns.length} className="h-40 text-center">
               <div className="flex flex-col items-center gap-2">
                 <UsersIcon
                   aria-hidden="true"
@@ -113,46 +114,31 @@ export function UsersTable({
           users.map((user, index) => (
             <TableRow
               key={user.id}
-              className="users-admin-row-in"
+              className="users-admin-row-in transition-color hover:brightness-90 dark:hover:brightness-125"
+              onClick={() => onUserClick(user)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onUserClick(user);
+                }
+              }}
+              tabIndex={0}
               style={{
                 animationDelay: `${Math.min(index, 14) * 28}ms`,
                 opacity: isFetching ? 0.55 : 1,
-                transition: "opacity 150ms ease-out",
+                transition: "opacity 150ms ease-out, filter 150ms ease-out",
               }}
             >
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar size="sm">
-                    <AvatarFallback>
-                      {getInitials(user.full_name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium">{user.full_name}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {user.login}
-              </TableCell>
-              <TableCell>
-                {user.roles.length > 0 ? (
-                  <div className="flex flex-wrap gap-1">
-                    {user.roles.map((role) => (
-                      <RoleBadge key={role} role={role} />
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </TableCell>
-              <TableCell>{GENDER_LABELS[user.gender]}</TableCell>
-              <TableCell>{user.class_name ?? "—"}</TableCell>
-              <TableCell>{user.graduation_year ?? "—"}</TableCell>
-              <TableCell className="text-muted-foreground">
-                {formatDate(user.created_at)}
-              </TableCell>
-              <TableCell className="text-right">
-                <Badge variant="secondary">{user.permissions.length}</Badge>
-              </TableCell>
+              {hasColumn("full_name") && <TableCell><span className="font-medium">{user.full_name}</span></TableCell>}
+              {hasColumn("login") && <TableCell className="text-muted-foreground">{user.login}</TableCell>}
+              {hasColumn("roles") && <TableCell>{user.roles.length > 0 ? <div className="flex flex-wrap gap-1">{user.roles.map((role) => <RoleBadge key={role} role={role} />)}</div> : <span className="text-muted-foreground">—</span>}</TableCell>}
+              {hasColumn("gender") && <TableCell>{GENDER_LABELS[user.gender]}</TableCell>}
+              {hasColumn("class_name") && <TableCell>{user.class_name ?? "—"}</TableCell>}
+              {hasColumn("graduation_year") && <TableCell>{user.graduation_year ?? "—"}</TableCell>}
+              {hasColumn("birthday") && <TableCell>{user.birthday ?? "—"}</TableCell>}
+              {hasColumn("created_at") && <TableCell className="text-muted-foreground">{formatDate(user.created_at)}</TableCell>}
+              {hasColumn("updated_at") && <TableCell className="text-muted-foreground">{formatDate(user.updated_at)}</TableCell>}
+              {hasColumn("lives_in_dormitory") && <TableCell>{user.lives_in_dormitory ? "Да" : "Нет"}</TableCell>}
             </TableRow>
           ))
         )}

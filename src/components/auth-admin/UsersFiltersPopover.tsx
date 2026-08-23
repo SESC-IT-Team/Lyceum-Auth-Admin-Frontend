@@ -1,7 +1,9 @@
-import { FilterIcon, RotateCcwIcon, XIcon } from "lucide-react";
-import type { Gender, Permission, Role } from "@/api/literals";
+import { FilterIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react";
+import { useState } from "react";
+import type { Gender, Role } from "@/api/literals";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverBody,
@@ -17,46 +19,37 @@ import {
   GENDER_LABELS,
   GRADE_OPTIONS,
   LETTER_OPTIONS,
-  PERMISSION_GROUPS,
-  PERMISSION_LABELS,
   ROLE_ORDER,
-  type PermissionGroup,
 } from "@/lib/users-meta";
 import { RoleDotLabel } from "@/components/auth-admin/RoleBadge";
 
 export interface FiltersState {
   gender: Gender | null;
   roles: Role[];
-  permissions: Permission[];
   grades: number[];
   letters: string[];
+  graduationYears: number[];
+  livesInDormitory: boolean | null;
 }
 
 export const EMPTY_FILTERS: FiltersState = {
   gender: null,
   roles: [],
-  permissions: [],
   grades: [],
   letters: [],
+  graduationYears: [],
+  livesInDormitory: null,
 };
 
 export function countActiveFilters(filters: FiltersState): number {
   return (
     (filters.gender ? 1 : 0) +
     filters.roles.length +
-    filters.permissions.length +
     filters.grades.length +
-    filters.letters.length
+    filters.letters.length +
+    filters.graduationYears.length +
+    (filters.livesInDormitory === null ? 0 : 1)
   );
-}
-
-function mergeGroupPermissions(
-  current: Permission[],
-  group: PermissionGroup,
-  nextInGroup: string[],
-): Permission[] {
-  const outsideGroup = current.filter((p) => !group.permissions.includes(p));
-  return [...outsideGroup, ...(nextInGroup as Permission[])];
 }
 
 interface UsersFiltersPopoverProps {
@@ -69,6 +62,25 @@ export function UsersFiltersPopover({
   onChange,
 }: UsersFiltersPopoverProps) {
   const activeCount = countActiveFilters(value);
+  const [yearInput, setYearInput] = useState("");
+
+  function addGraduationYear() {
+    const year = Number(yearInput);
+    if (!Number.isInteger(year) || value.graduationYears.includes(year)) return;
+
+    onChange({
+      ...value,
+      graduationYears: [...value.graduationYears, year].sort((a, b) => a - b),
+    });
+    setYearInput("");
+  }
+
+  function removeGraduationYear(year: number) {
+    onChange({
+      ...value,
+      graduationYears: value.graduationYears.filter((current) => current !== year),
+    });
+  }
 
   return (
     <Popover>
@@ -145,48 +157,6 @@ export function UsersFiltersPopover({
             </ToggleGroup>
           </FieldSet>
 
-          <FieldSet className="gap-3">
-            <FieldLegend variant="label">Разрешения</FieldLegend>
-            <div className="flex flex-col gap-3">
-              {PERMISSION_GROUPS.map((group) => {
-                const groupValue = value.permissions.filter((p) =>
-                  group.permissions.includes(p),
-                );
-                return (
-                  <div key={group.key} className="flex flex-col gap-1.5">
-                    <span className="text-muted-foreground text-xs">
-                      {group.label}
-                    </span>
-                    <ToggleGroup
-                      value={groupValue}
-                      onValueChange={(details: { value: string[] }) =>
-                        onChange({
-                          ...value,
-                          permissions: mergeGroupPermissions(
-                            value.permissions,
-                            group,
-                            details.value,
-                          ),
-                        })
-                      }
-                      className="flex flex-wrap gap-2"
-                    >
-                      {group.permissions.map((permission) => (
-                        <ToggleGroupItem
-                          key={permission}
-                          value={permission}
-                          className="text-xs"
-                        >
-                          {PERMISSION_LABELS[permission]}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
-                  </div>
-                );
-              })}
-            </div>
-          </FieldSet>
-
           <FieldSet className="gap-2">
             <FieldLegend variant="label">Класс</FieldLegend>
             <ToggleGroup
@@ -218,6 +188,69 @@ export function UsersFiltersPopover({
                   {letter}
                 </ToggleGroupItem>
               ))}
+            </ToggleGroup>
+          </FieldSet>
+
+          <FieldSet className="gap-2">
+            <FieldLegend variant="label">Год выпуска</FieldLegend>
+            <div className="flex items-center gap-2">
+              <Input
+                className="h-8 w-28"
+                inputMode="numeric"
+                maxLength={4}
+                placeholder="2026"
+                value={yearInput}
+                onChange={(event) => setYearInput(event.target.value.replace(/\D/g, ""))}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    addGraduationYear();
+                  }
+                }}
+              />
+              <Button
+                aria-label="Добавить год выпуска"
+                size="icon-sm"
+                type="button"
+                onClick={addGraduationYear}
+              >
+                <PlusIcon aria-hidden="true" />
+              </Button>
+            </div>
+            {value.graduationYears.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {value.graduationYears.map((year) => (
+                  <Badge key={year} className="gap-1" variant="secondary">
+                    {year}
+                    <button
+                      aria-label={`Удалить год ${year}`}
+                      className="text-muted-foreground hover:text-foreground"
+                      type="button"
+                      onClick={() => removeGraduationYear(year)}
+                    >
+                      <XIcon aria-hidden="true" className="size-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </FieldSet>
+
+          <FieldSet className="gap-2">
+            <FieldLegend variant="label">Общежитие</FieldLegend>
+            <ToggleGroup
+              multiple={false}
+              value={value.livesInDormitory === null ? [] : [String(value.livesInDormitory)]}
+              onValueChange={(details: { value: string[] }) =>
+                onChange({
+                  ...value,
+                  livesInDormitory: details.value[0] === undefined ? null : details.value[0] === "true",
+                })
+              }
+              className="flex flex-wrap gap-2"
+            >
+              <ToggleGroupItem value="true">Живет</ToggleGroupItem>
+              <ToggleGroupItem value="false">Не живет</ToggleGroupItem>
             </ToggleGroup>
           </FieldSet>
         </PopoverBody>

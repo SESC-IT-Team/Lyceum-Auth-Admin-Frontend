@@ -5,14 +5,18 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useUsersQuery } from "@/hooks/useUsersQuery";
 import { UsersToolbar } from "@/components/auth-admin/UsersToolbar";
-import { UsersTable } from "@/components/auth-admin/UsersTable";
+import { USER_COLUMNS, UsersTable, type UserColumnKey } from "@/components/auth-admin/UsersTable";
 import { UsersPagination } from "@/components/auth-admin/UsersPagination";
+import { UserDetailsDrawer } from "@/components/auth-admin/UserDetailsDrawer";
+import { CreateUserDrawer } from "@/components/auth-admin/CreateUserDrawer";
 import { EMPTY_FILTERS, type FiltersState } from "@/components/auth-admin/UsersFiltersPopover";
 import type { SearchableField } from "@/lib/users-meta";
+import type { UserGetResponse } from "@/api/types";
 import "./users-admin.css";
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 400;
+const DEFAULT_VISIBLE_COLUMNS: UserColumnKey[] = USER_COLUMNS.slice(0, 7).map(({ key }) => key);
 
 export default function UsersAdminPage() {
   const [page, setPage] = useState(1);
@@ -22,6 +26,9 @@ export default function UsersAdminPage() {
   const [sortBy, setSortBy] = useState<UserSortableField>("created_at");
   const [order, setOrder] = useState<SortingOrder>("desc");
   const [filters, setFilters] = useState<FiltersState>(EMPTY_FILTERS);
+  const [selectedUser, setSelectedUser] = useState<UserGetResponse | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<UserColumnKey[]>(DEFAULT_VISIBLE_COLUMNS);
 
   const criteriaKey = JSON.stringify({
     debouncedSearch,
@@ -50,16 +57,15 @@ export default function UsersAdminPage() {
       order,
       ...(filters.gender ? { gender: filters.gender } : {}),
       ...(filters.roles.length ? { roles: filters.roles } : {}),
-      ...(filters.permissions.length
-        ? { permissions: filters.permissions }
-        : {}),
       ...(filters.grades.length ? { grades: filters.grades } : {}),
       ...(filters.letters.length ? { letters: filters.letters } : {}),
+      ...(filters.graduationYears.length ? { graduation_years: filters.graduationYears } : {}),
+      ...(filters.livesInDormitory !== null ? { lives_in_dormitory: filters.livesInDormitory } : {}),
       ...searchPart,
     };
   }, [page, sortBy, order, debouncedSearch, searchField, filters]);
 
-  const { users, total, isLoading, isFetching, error } = useUsersQuery(query);
+  const { users, total, isLoading, isFetching, error, reload } = useUsersQuery(query);
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const animatedTotal = useCountUp(total);
 
@@ -104,6 +110,9 @@ export default function UsersAdminPage() {
             filters={filters}
             onFiltersChange={setFilters}
             isFetching={isFetching}
+            visibleColumns={visibleColumns}
+            onVisibleColumnsChange={setVisibleColumns}
+            onCreateUser={() => setIsCreateOpen(true)}
           />
 
           <div className="overflow-x-auto rounded-lg border">
@@ -112,10 +121,27 @@ export default function UsersAdminPage() {
               isLoading={isLoading}
               isFetching={isFetching}
               error={error}
+              onUserClick={setSelectedUser}
+              visibleColumns={visibleColumns}
             />
           </div>
         </div>
       </div>
+
+      <UserDetailsDrawer
+        user={selectedUser}
+        open={selectedUser !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedUser(null);
+        }}
+        onChanged={reload}
+      />
+
+      <CreateUserDrawer
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onCreated={reload}
+      />
 
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <p className="text-muted-foreground text-sm">
