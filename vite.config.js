@@ -8,7 +8,7 @@ const allowedHosts = [
 ].filter(Boolean)
 
 export default defineConfig({
-  base: '/auth-admin/',
+  base: '/',
   plugins: [react(), tailwindcss()],
   server: {
     host: '0.0.0.0',

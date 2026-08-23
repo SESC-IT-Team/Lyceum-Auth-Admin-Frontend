@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     environment:
       DOMAIN: ${DOMAIN}
+      APP_DOMAIN: ${APP_DOMAIN:-admin.${DOMAIN}}
       AUTH_DOMAIN: ${AUTH_DOMAIN}
 
     networks:
@@ -21,7 +22,7 @@ services:
 
       traefik.http.services.auth-admin.loadbalancer.server.port: "4173"
 
-      traefik.http.routers.auth-admin.rule: "Host(`${DOMAIN}`) && PathPrefix(`/auth-admin`)"
+      traefik.http.routers.auth-admin.rule: "Host(`${APP_DOMAIN:-admin.${DOMAIN}}`)"
       traefik.http.routers.auth-admin.entrypoints: "websecure"
       traefik.http.routers.auth-admin.tls: "true"
       traefik.http.routers.auth-admin.tls.certresolver: "letsencrypt"
