@@ -11,7 +11,7 @@ const allowedHosts = [
 ].filter((host): host is string => Boolean(host))
 
 export default defineConfig({
-  //base: '/auth-admin/',
+  base: '/auth-admin/',
   server: {
     host: '0.0.0.0',
     allowedHosts,

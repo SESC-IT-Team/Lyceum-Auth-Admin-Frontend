@@ -11,18 +11,22 @@ import {
   LogoutButton,
   useAuth,
   type AuthClientConfig,
-  AUTH_SCOPES,
 } from "auth-lib";
 
 const API_ORIGIN = import.meta.env.VITE_AUTH_DOMAIN ?? import.meta.env.VITE_DOMAIN ?? "";
+const AUTH_PATH = import.meta.env.VITE_AUTH_PATH ?? "/api/auth";
+const AUTH_CALLBACK_PATH = import.meta.env.VITE_AUTH_CALLBACK_PATH ?? "/auth/callback";
+const AUTH_SCOPES = (import.meta.env.VITE_AUTH_SCOPES ?? "openid profile email offline_access auth:users:read auth:users:create auth:users:update auth:users:delete")
+  .split(/\s+/)
+  .filter(Boolean);
 const authConfig: AuthClientConfig = {
   baseUrl: API_ORIGIN,
-  authPath: "/api/auth",
+  authPath: AUTH_PATH,
   userInfoPath: null,
-  scope: ["openid", "profile", "email", "offline_access", AUTH_SCOPES.auth_users_read, AUTH_SCOPES.auth_users_create, AUTH_SCOPES.auth_users_update, AUTH_SCOPES.auth_users_delete],
+  scope: AUTH_SCOPES,
 };
 
-const LOGIN_REDIRECT_URI = `${window.location.origin}/auth/callback`;
+const LOGIN_REDIRECT_URI = `${window.location.origin}${AUTH_CALLBACK_PATH}`;
 
 function isAuthCallbackUrl() {
   const query = new URLSearchParams(window.location.search);
