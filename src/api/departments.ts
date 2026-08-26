@@ -7,7 +7,7 @@ import type {
 } from "./types";
 
 const API_BASE = `${import.meta.env.VITE_AUTH_DOMAIN ?? import.meta.env.VITE_DOMAIN ?? ""}`;
-const USER_SERVICE_PROXY = "/api/proxy/user-service";
+const USER_SERVICE_PROXY = "/proxy/user-service";
 type AuthFetch = (input: string, init?: RequestInit) => Promise<Response>;
 
 async function request<T>(url: string, authFetch: AuthFetch, init?: RequestInit): Promise<T> {
@@ -39,7 +39,7 @@ export async function getDepartmentMembers(
   if (params.lives_in_dormitory !== undefined) search.set("lives_in_dormitory", String(params.lives_in_dormitory));
   params.positions?.forEach((value) => search.append("positions", value));
   return request<DepartmentMemberListResponse>(
-    `${USER_SERVICE_PROXY}/api/v1/departments/${department}/members?${search.toString()}`,
+    `${USER_SERVICE_PROXY}/v1/departments/${department}/members?${search.toString()}`,
     authFetch,
   );
 }
@@ -51,14 +51,14 @@ export async function updateDepartmentMemberPosition(
   authFetch: AuthFetch,
 ): Promise<void> {
   const data: UpdateDepartmentMemberPositionRequest = { position };
-  await request<void>(`${USER_SERVICE_PROXY}/api/v1/departments/${department}/members/${userId}`, authFetch, {
+  await request<void>(`${USER_SERVICE_PROXY}/v1/departments/${department}/members/${userId}`, authFetch, {
     method: "PUT",
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteDepartmentMember(department: Department, userId: string, authFetch: AuthFetch): Promise<void> {
-  await request<void>(`${USER_SERVICE_PROXY}/api/v1/departments/${department}/members/${userId}`, authFetch, { method: "DELETE" });
+  await request<void>(`${USER_SERVICE_PROXY}/v1/departments/${department}/members/${userId}`, authFetch, { method: "DELETE" });
 }
 
 export async function updateDepartmentMembers(
@@ -66,7 +66,7 @@ export async function updateDepartmentMembers(
   data: UpdateDepartmentMembersRequest,
   authFetch: AuthFetch,
 ): Promise<void> {
-  await request<void>(`${USER_SERVICE_PROXY}/api/v1/departments/${department}/members`, authFetch, {
+  await request<void>(`${USER_SERVICE_PROXY}/v1/departments/${department}/members`, authFetch, {
     method: "PATCH",
     body: JSON.stringify(data),
   });

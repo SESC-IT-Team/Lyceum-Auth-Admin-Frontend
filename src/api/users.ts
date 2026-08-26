@@ -8,7 +8,7 @@ import type {
 } from "./types";
 
 const API_BASE = `${import.meta.env.VITE_AUTH_DOMAIN ?? import.meta.env.VITE_DOMAIN ?? ""}`;
-const USER_SERVICE_PROXY = "/api/proxy/user-service";
+const USER_SERVICE_PROXY = "/proxy/user-service";
 type AuthFetch = (input: string, init?: RequestInit) => Promise<Response>;
 
 async function request<T>(
@@ -88,7 +88,7 @@ export async function getUsers(
   }
 
   return request<UserListResponse>(
-    `${USER_SERVICE_PROXY}/api/v1/users?${search.toString()}`,
+    `${USER_SERVICE_PROXY}/v1/users?${search.toString()}`,
     authFetch,
   );
 }
@@ -98,7 +98,7 @@ export async function getUser(
   authFetch: AuthFetch,
 ): Promise<UserGetResponse> {
   return request<UserGetResponse>(
-    `${USER_SERVICE_PROXY}/api/v1/users/${userId}`,
+    `${USER_SERVICE_PROXY}/v1/users/${userId}`,
     authFetch,
   );
 }
@@ -108,7 +108,7 @@ export async function createUser(
   authFetch: AuthFetch,
 ): Promise<UserGetResponse> {
   return request<UserGetResponse>(
-    `${USER_SERVICE_PROXY}/api/v1/users`,
+    `${USER_SERVICE_PROXY}/v1/users`,
     authFetch,
     {
       method: "POST",
@@ -123,7 +123,7 @@ export async function updateUser(
   authFetch: AuthFetch,
 ): Promise<UserGetResponse> {
   return request<UserGetResponse>(
-    `${USER_SERVICE_PROXY}/api/v1/users/${userId}`,
+    `${USER_SERVICE_PROXY}/v1/users/${userId}`,
     authFetch,
     {
       method: "PATCH",
@@ -137,7 +137,7 @@ export async function deleteUser(
   authFetch: AuthFetch,
 ): Promise<void> {
   await request<void>(
-    `${USER_SERVICE_PROXY}/api/v1/users/${userId}`,
+    `${USER_SERVICE_PROXY}/v1/users/${userId}`,
     authFetch,
     {
       method: "DELETE",
@@ -151,7 +151,7 @@ export async function updateUserPassword(
   authFetch: AuthFetch,
 ): Promise<void> {
   await request<void>(
-    `${USER_SERVICE_PROXY}/api/v1/users/${userId}/password`,
+    `${USER_SERVICE_PROXY}/v1/users/${userId}/password`,
     authFetch,
     {
       method: "PUT",
@@ -165,7 +165,7 @@ export async function getUserParents(
   params: UsersListQuery,
   authFetch: AuthFetch,
 ): Promise<UserListResponse> {
-  return getRelatedUsers(`${USER_SERVICE_PROXY}/api/v1/users/${userId}/parents`, params, authFetch);
+  return getRelatedUsers(`${USER_SERVICE_PROXY}/v1/users/${userId}/parents`, params, authFetch);
 }
 
 export async function getUserChildren(
@@ -173,7 +173,7 @@ export async function getUserChildren(
   params: UsersListQuery,
   authFetch: AuthFetch,
 ): Promise<UserListResponse> {
-  return getRelatedUsers(`${USER_SERVICE_PROXY}/api/v1/users/${userId}/children`, params, authFetch);
+  return getRelatedUsers(`${USER_SERVICE_PROXY}/v1/users/${userId}/children`, params, authFetch);
 }
 
 async function getRelatedUsers(
@@ -215,7 +215,7 @@ async function updateUserRelationship(
   authFetch: AuthFetch,
 ): Promise<void> {
   await request<void>(
-    `${USER_SERVICE_PROXY}/api/v1/users/${userId}/${relationship}`,
+    `${USER_SERVICE_PROXY}/v1/users/${userId}/${relationship}`,
     authFetch,
     {
       method: "PATCH",

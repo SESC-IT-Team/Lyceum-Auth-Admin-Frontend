@@ -14,7 +14,7 @@ import {
 } from "auth-lib";
 
 const API_ORIGIN = import.meta.env.VITE_AUTH_DOMAIN ?? import.meta.env.VITE_DOMAIN ?? "";
-const AUTH_PATH = import.meta.env.VITE_AUTH_PATH ?? "/api/auth";
+const AUTH_PATH = import.meta.env.VITE_AUTH_PATH ?? "/auth";
 const AUTH_CALLBACK_PATH = import.meta.env.VITE_AUTH_CALLBACK_PATH ?? "/auth/callback";
 const AUTH_SCOPES = (import.meta.env.VITE_AUTH_SCOPES ?? "openid profile email offline_access auth:users:read auth:users:create auth:users:update auth:users:delete")
   .split(/\s+/)
