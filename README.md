@@ -1,3 +1,14 @@
+# Lyceum Auth Admin Frontend
+
+## Environment configuration
+
+The frontend uses `VITE_*` values from `.env` during development. In the production Docker image, the same values are injected when the container starts, so one image can run in different environments without rebuilding.
+
+These values are public browser configuration. Do not put secrets or credentials in them.
+
+The entrypoint writes the runtime values to `dist/runtime-config.js` before starting the preview server.
+
+## Development
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.

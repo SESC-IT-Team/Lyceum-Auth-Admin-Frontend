@@ -6,8 +6,10 @@ import type {
   UpdateUserParentsOrChildrenRequest,
   UsersListQuery,
 } from "./types";
+import { getRuntimeConfig } from "@/lib/runtime-config";
 
-const API_BASE = `${import.meta.env.VITE_AUTH_DOMAIN ?? import.meta.env.VITE_DOMAIN ?? ""}`;
+const runtimeConfig = getRuntimeConfig();
+const API_BASE = `${runtimeConfig.VITE_AUTH_DOMAIN ?? runtimeConfig.VITE_DOMAIN ?? ""}`;
 const USER_SERVICE_PROXY = "/proxy/user-service";
 type AuthFetch = (input: string, init?: RequestInit) => Promise<Response>;
 

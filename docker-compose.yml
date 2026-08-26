@@ -8,9 +8,12 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      DOMAIN: ${DOMAIN}
-      APP_DOMAIN: ${APP_DOMAIN:-admin.${DOMAIN}}
-      AUTH_DOMAIN: ${AUTH_DOMAIN}
+      VITE_DOMAIN: ${VITE_DOMAIN:-https://sesc-it-team.ru}
+      VITE_AUTH_DOMAIN: ${VITE_AUTH_DOMAIN:-https://auth.sesc-it-team.ru}
+      VITE_AUTH_PATH: ${VITE_AUTH_PATH:-/api/auth}
+      VITE_AUTH_CALLBACK_PATH: ${VITE_AUTH_CALLBACK_PATH:-/auth/callback}
+      VITE_AUTH_SCOPES: ${VITE_AUTH_SCOPES:-openid profile email offline_access auth:users:read auth:users:create auth:users:update auth:users:delete}
+      APP_DOMAIN: ${APP_DOMAIN:-admin.sesc-it-team.ru}
 
     networks:
       - traefik-public
@@ -22,7 +25,7 @@ services:
 
       traefik.http.services.auth-admin.loadbalancer.server.port: "4173"
 
-      traefik.http.routers.auth-admin.rule: "Host(`${APP_DOMAIN:-admin.${DOMAIN}}`)"
+      traefik.http.routers.auth-admin.rule: "Host(`${APP_DOMAIN:-admin.sesc-it-team.ru}`)"
       traefik.http.routers.auth-admin.entrypoints: "websecure"
       traefik.http.routers.auth-admin.tls: "true"
       traefik.http.routers.auth-admin.tls.certresolver: "letsencrypt"

@@ -12,11 +12,13 @@ import {
   useAuth,
   type AuthClientConfig,
 } from "auth-lib";
+import { getRuntimeConfigWithDefaults } from "@/lib/runtime-config";
 
-const API_ORIGIN = import.meta.env.VITE_AUTH_DOMAIN ?? import.meta.env.VITE_DOMAIN ?? "";
-const AUTH_PATH = import.meta.env.VITE_AUTH_PATH ?? "/auth";
-const AUTH_CALLBACK_PATH = import.meta.env.VITE_AUTH_CALLBACK_PATH ?? "/auth/callback";
-const AUTH_SCOPES = (import.meta.env.VITE_AUTH_SCOPES ?? "openid profile email offline_access auth:users:read auth:users:create auth:users:update auth:users:delete")
+const runtimeConfig = getRuntimeConfigWithDefaults();
+const API_ORIGIN = runtimeConfig.VITE_AUTH_DOMAIN ?? runtimeConfig.VITE_DOMAIN ?? "";
+const AUTH_PATH = runtimeConfig.VITE_AUTH_PATH;
+const AUTH_CALLBACK_PATH = runtimeConfig.VITE_AUTH_CALLBACK_PATH;
+const AUTH_SCOPES = runtimeConfig.VITE_AUTH_SCOPES
   .split(/\s+/)
   .filter(Boolean);
 const authConfig: AuthClientConfig = {
