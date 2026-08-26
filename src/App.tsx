@@ -37,6 +37,7 @@ function isAuthCallbackUrl() {
 
 function AuthenticatedApp() {
   const { status, error, refresh } = useAuth();
+  console.log(useAuth().client.config.baseUrl);
   const [isCallback, setIsCallback] = React.useState(isAuthCallbackUrl);
   const [view, setView] = React.useState<"users" | "departments">("users");
 
