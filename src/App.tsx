@@ -28,8 +28,6 @@ const authConfig: AuthClientConfig = {
   scope: AUTH_SCOPES,
 };
 
-const LOGIN_REDIRECT_URI = `${window.location.origin}${AUTH_CALLBACK_PATH}`;
-
 function isAuthCallbackUrl() {
   const query = new URLSearchParams(window.location.search);
   return (query.has("code") && query.has("state")) || query.has("error");
