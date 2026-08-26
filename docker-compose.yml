@@ -10,7 +10,7 @@ services:
     environment:
       VITE_DOMAIN: ${VITE_DOMAIN:-https://sesc-it-team.ru}
       VITE_AUTH_DOMAIN: ${VITE_AUTH_DOMAIN:-https://auth.sesc-it-team.ru}
-      VITE_AUTH_PATH: ${VITE_AUTH_PATH:-/api/auth}
+      VITE_AUTH_PATH: ${VITE_AUTH_PATH:-/auth}
       VITE_AUTH_CALLBACK_PATH: ${VITE_AUTH_CALLBACK_PATH:-/auth/callback}
       VITE_AUTH_SCOPES: ${VITE_AUTH_SCOPES:-openid profile email offline_access auth:users:read auth:users:create auth:users:update auth:users:delete}
       APP_DOMAIN: ${APP_DOMAIN:-admin.sesc-it-team.ru}

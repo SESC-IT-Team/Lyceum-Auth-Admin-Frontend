@@ -13,7 +13,7 @@ declare global {
 }
 
 const defaults = {
-  VITE_AUTH_PATH: "/api/auth",
+  VITE_AUTH_PATH: "/auth",
   VITE_AUTH_CALLBACK_PATH: "/auth/callback",
   VITE_AUTH_SCOPES:
     "openid profile email offline_access auth:users:read auth:users:create auth:users:update auth:users:delete",

@@ -15,7 +15,7 @@ import {
 import { getRuntimeConfigWithDefaults } from "@/lib/runtime-config";
 
 const runtimeConfig = getRuntimeConfigWithDefaults();
-const API_ORIGIN = runtimeConfig.VITE_AUTH_DOMAIN ?? runtimeConfig.VITE_DOMAIN ?? "";
+const API_ORIGIN = runtimeConfig.VITE_AUTH_DOMAIN;
 const AUTH_PATH = runtimeConfig.VITE_AUTH_PATH;
 const AUTH_CALLBACK_PATH = runtimeConfig.VITE_AUTH_CALLBACK_PATH;
 const AUTH_SCOPES = runtimeConfig.VITE_AUTH_SCOPES
