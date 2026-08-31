@@ -36,12 +36,15 @@ function AuthenticatedApp() {
   const { status, error, refresh } = useAuth();
   const [isCallback, setIsCallback] = React.useState(isAuthCallbackUrl);
   const [view, setView] = React.useState<"users" | "departments">("users");
+  const handleCallbackSuccess = React.useCallback(() => {
+    setIsCallback(false);
+  }, []);
 
   if (isCallback) {
     return (
       <AuthCallback
         fallbackPath="/"
-        onSuccess={() => setIsCallback(false)}
+        onSuccess={handleCallbackSuccess}
       />
     );
   }
