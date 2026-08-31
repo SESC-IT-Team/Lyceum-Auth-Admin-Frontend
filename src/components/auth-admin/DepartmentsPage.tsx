@@ -3,7 +3,7 @@ import { PlusIcon, SearchIcon, Trash2Icon, UsersRoundIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { createListCollection } from "@ark-ui/react/collection";
 import type { Department, DepartmentMemberPosition, DepartmentMemberSortableField, SortingOrder } from "@/api/literals";
-import { deleteDepartmentMember, updateDepartmentMemberPosition, updateDepartmentMembers } from "@/api/departments";
+import { deleteDepartmentMember, updateDepartmentMemberPosition } from "@/api/departments";
 import type { UsersListQuery } from "@/api/types";
 import { useDepartmentMembersQuery } from "@/hooks/useDepartmentMembersQuery";
 import { useUsersQuery } from "@/hooks/useUsersQuery";
@@ -56,7 +56,12 @@ export default function DepartmentsPage() {
 
   async function addMembers() {
     if (!selectedIds.length) return;
-    try { await updateDepartmentMembers(department, { ids_to_add: selectedIds }, authFetch); setSelectedIds([]); setAddOpen(false); members.reload(); }
+    try {
+      await Promise.all(selectedIds.map((userId) => updateDepartmentMemberPosition(department, userId, "worker", authFetch)));
+      setSelectedIds([]);
+      setAddOpen(false);
+      members.reload();
+    }
     catch (reason: unknown) { setActionError(reason instanceof Error ? reason.message : "Не удалось добавить сотрудников"); }
   }
 

@@ -3,7 +3,6 @@ import type {
   DepartmentMemberListResponse,
   DepartmentMembersQuery,
   UpdateDepartmentMemberPositionRequest,
-  UpdateDepartmentMembersRequest,
 } from "./types";
 import { getRuntimeConfig } from "@/lib/runtime-config";
 
@@ -61,15 +60,4 @@ export async function updateDepartmentMemberPosition(
 
 export async function deleteDepartmentMember(department: Department, userId: string, authFetch: AuthFetch): Promise<void> {
   await request<void>(`${USER_SERVICE_PROXY}/v1/departments/${department}/members/${userId}`, authFetch, { method: "DELETE" });
-}
-
-export async function updateDepartmentMembers(
-  department: Department,
-  data: UpdateDepartmentMembersRequest,
-  authFetch: AuthFetch,
-): Promise<void> {
-  await request<void>(`${USER_SERVICE_PROXY}/v1/departments/${department}/members`, authFetch, {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  });
 }

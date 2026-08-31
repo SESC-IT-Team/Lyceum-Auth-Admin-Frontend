@@ -133,11 +133,6 @@ export interface UpdateDepartmentMemberPositionRequest {
   position: DepartmentMemberPosition;
 }
 
-export interface UpdateDepartmentMembersRequest {
-  ids_to_add?: string[] | null;
-  ids_to_delete?: string[] | null;
-}
-
 export interface UpdateUserParentsOrChildrenRequest {
   ids_to_add?: string[] | null;
   ids_to_delete?: string[] | null;
